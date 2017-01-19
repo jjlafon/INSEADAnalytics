@@ -87,11 +87,14 @@ pnl_plot(SPY)
 3. *(Extra points)* What if we want to also see the returns of another company, say Yahoo!, in the same period? Can you get that data and report the statistics for Yahoo!'s stock, too? 
 
 **Your Answers here:**
-<br> 1. In the dataSet1.R file, stock price of Apple is downloaded in the line `r tmpdata<-as.matrix(try(getSymbols(Symbols=ticker_to_get,from = startDate,auto.assign=FALSE)))` when `r ticker_to_get` gets the value `r AAPL` 
-Then daily returns are computed from the value of successive stock prices `rStockReturns= ifelse(head(StockPrices,-1)!=0, (tail(StockPrices,-1)-head(StockPrices,-1))/head(StockPrices,-1),0)`.
-<br> 2. 
-<br>
-<br>
+<br> 1. In the dataSet1.R file, stock price of Apple is downloaded in the line `tmpdata<-as.matrix(try(getSymbols(Symbols=ticker_to_get,from = startDate,auto.assign=FALSE)))` when `ticker_to_get` gets the value `AAPL` 
+<br> Then daily returns are computed from the value of successive stock prices `StockReturns= ifelse(head(StockPrices,-1)!=0, (tail(StockPrices,-1)-head(StockPrices,-1))/head(StockPrices,-1),0)`.
+<br> 
+<br> 2.   The cumulative returns of AAPL during this period is `round(100*sum(StockReturns[,2]),1)`%.
+<br> The average daily returns of APPL during this period is `round(100*mean(StockReturns[,2]),3)`%;
+<br> The standard deviation of the daily returns of APPL during this period is `round(100*sd(StockReturns[,2]),3)`%;
+<br> 
+<br> 3. Yes, the code in dataSet1.R needs to be amended to add YHOO ticker. More precisely, `mytickers = c("SPY", "AAPL", "YHOO")` has to be changed this way. Nothing else in the code need to be changed, since `length(mytickers)`takes into account that there is now a 3rd argument.
 <hr>
 <hr>
 
@@ -128,9 +131,18 @@ We can also transpose the matrix of returns to create a new "horizontal" matrix.
 2. Based on the help for the R function *apply* (`help(apply)`), can you create again the portfolio of S&P and Apple and plot the returns in a new figure below?
 
 **Your Answers here:**
-<br>
-<br>
-<br>
+<br> 1. # of rows: `r nrow(transposedData)`. Answer: 2
+<br> # of columns `r ncol(transposedData)`. Answer: 4035
+<br> 
+<br> 2. Since we are dealing with a transposed matrix, we need to make 2 slight adjustments:
+<br> - apply the mean function to the columns instead of the rows 
+<br> - use colnames instead of rownames to get the dates for the x-axis
+<br> 
+```{r echo=FALSE, comment=NA, warning=FALSE, message=FALSE,results='asis',fig.align='center', fig=TRUE}
+portfolio2 = apply(transposedData,2,mean)
+names(portfolio2) <- colnames(transposedData)
+pnl_plot(portfolio2)
+```
 <br>
 
 <hr>
@@ -146,9 +158,15 @@ This is an important step and will get you to think about the overall process on
 2. *(Extra Exercise)*  Can you get the returns of a few companies and plot the returns of an equal weighted portfolio with those companies during some period you select? 
 
 **Your Answers here:**
+<br> 1. We just need to change data in row 9 to: `r startDate = "2001-01-01"`. It was already set to this date
+<br> 
+<br> 2. I've added 2 new stocks to ```mytickers```, namely Microsoft and Twitter in the code. I want to have an equal weighted portfolio of these 2 companies, and I want to see the returns since 11/18/2013
 <br>
-<br>
-<br>
+```{r echo=FALSE, comment=NA, warning=FALSE, message=FALSE,results='asis',fig.align='center', fig=TRUE}
+portfolio3 = apply(StockReturns[,c("MSFT","TWTR")],1,mean)
+names(portfolio3) <- rownames(StockReturns)
+pnl_plot(portfolio3)
+```
 <br>
 
 <hr>
@@ -180,10 +198,9 @@ myData + StockReturns[1:40,]
 ```
 
 **Your Answers here:**
-<br>
-<br>
-<br>
-<br>
+<br> 1. Because ";" was used in the code to create `myData` instead of ",", we created a 20x1 matrix with strings of characters in each row. Since `StockReturns[1:20,c("SPY","AAPL")]` is a 20x2 matrix, testing if these 2 matrix are different always returns TRUE, thus the sum equals 20.
+<br> 
+<br> 2. This code will return an error since we are trying to sum a 20X1 matrix with strings of characters and a 20x2 matrix with numbers.
 
 <hr>
 <hr>
